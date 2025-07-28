@@ -6,6 +6,13 @@ import Login from './components/Login';
 import Dashboard from './components/StudentDashboard';
 import StudentList from './components/StudentList';
 import AddStudent from './components/AddStudent';
+import StudentDashboard from './components/StudentDashboard';
+import AdminDashboard from './components/AdminDashboard';
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
+
+
+
 
 function App() {
   return (
@@ -17,6 +24,13 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/students" element={<StudentList />} />
         <Route path="/add-student" element={<AddStudent />} />
+        <Route path="/student-dashboard" element={<StudentDashboard />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+<       Route path="/reset-password/:token" element={<ResetPassword />} />
+        
+
+
       </Routes>
     </Router>
   );
