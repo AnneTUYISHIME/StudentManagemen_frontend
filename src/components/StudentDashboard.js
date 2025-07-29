@@ -1,24 +1,44 @@
 // src/components/StudentDashboard.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const StudentDashboard = () => {
+  const [student, setStudent] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
 
-  const student = {
-    fullName: 'Anne Tuyishime',
-    email: 'anne@example.com',
-    phone: '0786544729',
-    course: 'Computer Science',
-    enrollmentYear: '2023',
-  };
+  useEffect(() => {
+    const fetchStudent = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          "https://student-managementsystem-6xz7.onrender.com/api/students/me",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setStudent(res.data);
+        setProfilePicture(res.data.imageUrl || null);
+      } catch (error) {
+        console.error("Error fetching student:", error);
+      }
+    };
+
+    fetchStudent();
+  }, []);
 
   const handlePictureChange = (e) => {
     setProfilePicture(URL.createObjectURL(e.target.files[0]));
   };
 
+  if (!student) {
+    return <div className="text-center mt-20 text-xl">Loading your profile...</div>;
+  }
+
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>Welcome to Student Dashboard</h1>
+      <h1 style={styles.title}>Welcome, {student.fullName}</h1>
       <div style={styles.container}>
         {/* Left: Profile Picture & Upload */}
         <div style={styles.leftPanel}>
@@ -77,7 +97,7 @@ const styles = {
     fontWeight: '700',
     marginBottom: '40px',
     textAlign: 'center',
-    color: '#2563eb', // Tailwind Blue-600
+    color: '#2563eb',
   },
   container: {
     maxWidth: '900px',
@@ -87,7 +107,7 @@ const styles = {
     backgroundColor: '#ffffff',
     padding: '30px',
     borderRadius: '12px',
-    boxShadow: '0 8px 24px rgba(37, 99, 235, 0.15)', // subtle blue shadow
+    boxShadow: '0 8px 24px rgba(37, 99, 235, 0.15)',
   },
   leftPanel: {
     flex: '1',
@@ -109,7 +129,7 @@ const styles = {
   uploadText: {
     marginTop: '12px',
     fontSize: '14px',
-    color: '#6b7280', // Tailwind Gray-500
+    color: '#6b7280',
   },
   rightPanel: {
     flex: '2',
@@ -130,7 +150,7 @@ const styles = {
   },
   label: {
     fontWeight: '700',
-    color: '#374151', // Tailwind Gray-700
+    color: '#374151',
     marginRight: '8px',
   },
 };
