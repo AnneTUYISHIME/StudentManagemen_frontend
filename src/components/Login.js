@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { loginUser } from "../api";
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,13 +16,16 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        "https://student-management-backend.onrender.com/api/auth/login",
-        formData
-      );
-      alert("Login successful!");
+      const res = await loginUser(formData);
+
+      // ✅ Save token in localStorage
       localStorage.setItem("token", res.data.token);
-      window.location.href = "/dashboard";
+
+      // ✅ Optionally store user info (you can remove if you're fetching live profile)
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      // ✅ Redirect to dashboard
+      navigate("/student-dashboard");
     } catch (error) {
       alert("Login failed. Check your credentials.");
     } finally {
@@ -49,12 +49,11 @@ const Login = () => {
           </label>
           <input
             type="email"
-            id="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full px-3 py-2 border rounded-lg"
           />
         </div>
 
@@ -64,31 +63,21 @@ const Login = () => {
           </label>
           <input
             type="password"
-            id="password"
             name="password"
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full px-3 py-2 border rounded-lg"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+          className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-
-        <div className="mt-4 text-sm text-center">
-          <Link
-            to="/forgot-password"
-            className="text-indigo-600 hover:underline"
-          >
-            Forgot Password?
-          </Link>
-        </div>
       </form>
     </div>
   );
