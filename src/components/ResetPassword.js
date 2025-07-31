@@ -1,9 +1,10 @@
+// src/components/ResetPassword.js
 import React, { useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
-  const { token } = useParams(); // get token from URL
+  const { token } = useParams(); // Extract reset token from URL
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -13,35 +14,51 @@ const ResetPassword = () => {
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setMessage(""); // Clear message on input change
+    setMessage("");
     setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+    if (formData.password.length < 6) {
+      setError("❌ Password must be at least 6 characters.");
       return;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("❌ Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      await axios.post(
-        `https://student-management-backend.onrender.com/api/auth/reset-password/${token}`,
-        { password: formData.password }
+      const res = await axios.post(
+        `https://student-managementsystem-6xz7.onrender.com/api/auth/reset-password/${token}`,
+        { password: formData.password } // ✅ Must match the backend
       );
-      setMessage("✅ Password updated successfully!");
+
+      setMessage(res.data.message || "✅ Password updated successfully!");
       setFormData({ password: "", confirmPassword: "" });
 
-      // Optionally redirect after a short delay
+      // Redirect to login after 3 seconds
       setTimeout(() => {
         navigate("/login");
-      }, 2500);
+      }, 3000);
     } catch (err) {
-      setError("Something went wrong. Try again.");
+      console.error(err);
+      if (err.response?.data?.message) {
+        setError("❌ " + err.response.data.message);
+      } else {
+        setError("❌ Reset link is invalid or expired.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,11 +69,15 @@ const ResetPassword = () => {
         className="bg-white p-8 rounded shadow-md w-full max-w-md"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-700">
-          Reset Password
+          Reset Your Password
         </h2>
 
-        {message && <p className="text-green-600 text-sm mb-4">{message}</p>}
-        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+        {message && (
+          <p className="text-green-600 text-sm mb-4 text-center">{message}</p>
+        )}
+        {error && (
+          <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
+        )}
 
         <label className="block mb-2 font-semibold">New Password</label>
         <input
@@ -80,9 +101,10 @@ const ResetPassword = () => {
 
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-indigo-600 text-white py-3 rounded font-semibold hover:bg-indigo-700 transition"
         >
-          Reset Password
+          {loading ? "Resetting..." : "Reset Password"}
         </button>
       </form>
     </div>
