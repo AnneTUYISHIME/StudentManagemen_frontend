@@ -14,6 +14,7 @@ import ResetPassword from "./components/ResetPassword";
 
 
 
+
 function App() {
   return (
     <Router>
@@ -27,7 +28,8 @@ function App() {
         <Route path="/student-dashboard" element={<StudentDashboard />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-<       Route path="/reset-password/:token" element={<ResetPassword />} />
+       <Route path="/reset-password/:token" element={<ResetPassword />} />
+       
         
 
 
