@@ -11,7 +11,36 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const res = await axios.post("https://your-backend-url/api/auth/login", {
+        email,
+        password,
+      });
+  
+      const { token, user } = res.data;
+  
+      // Store token and user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+  
+      // ✅ Redirect based on role
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/student-dashboard");
+      }
+  
+    } catch (err) {
+      alert("Login failed: " + err.response?.data?.message || "Unknown error");
+    }
+  };
+  
+
+  /*const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -31,7 +60,7 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-100 via-white to-indigo-200 px-4">
