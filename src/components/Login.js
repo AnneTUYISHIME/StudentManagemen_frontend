@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../api";
+import axios from "axios";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -11,61 +12,41 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
   const handleLogin = async (e) => {
     e.preventDefault();
-  
+    const { email, password } = formData; // ✅ extract values properly
+    setLoading(true);
+
     try {
-      const res = await axios.post("https://your-backend-url/api/auth/login", {
-        email,
-        password,
-      });
-  
+      const res = await axios.post(
+        "https://student-managementsystem-6xz7.onrender.com/api/auth/login", // ✅ Use your actual backend
+        { email, password }
+      );
+
       const { token, user } = res.data;
-  
-      // Store token and user info
+
+      // ✅ Store token and user info
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-  
+
       // ✅ Redirect based on role
       if (user.role === "admin") {
         navigate("/admin-dashboard");
       } else {
         navigate("/student-dashboard");
       }
-  
+
     } catch (err) {
-      alert("Login failed: " + err.response?.data?.message || "Unknown error");
-    }
-  };
-  
-
-  /*const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const res = await loginUser(formData);
-
-      // ✅ Save token in localStorage
-      localStorage.setItem("token", res.data.token);
-
-      // ✅ Optionally store user info (you can remove if you're fetching live profile)
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-
-      // ✅ Redirect to dashboard
-      navigate("/student-dashboard");
-    } catch (error) {
-      alert("Login failed. Check your credentials.");
+      alert("Login failed: " + (err.response?.data?.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
-  };*/
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-100 via-white to-indigo-200 px-4">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleLogin} 
         className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md"
       >
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">
