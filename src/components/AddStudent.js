@@ -36,6 +36,7 @@ const AddStudent = () => {
       <input name="email" type="email" onChange={handleChange} placeholder="Email" />
       <input name="phone" onChange={handleChange} placeholder="Phone" />
       <input name="course" onChange={handleChange} placeholder="Course" />
+      <input name="registration number" onChange={handleChange} placeholder="registration number" />
       <input name="enrollmentYear" onChange={handleChange} placeholder="Enrollment Year" />
       <button type="submit">Add Student</button>
     </form>
